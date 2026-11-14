@@ -9,6 +9,16 @@ pub struct Target {
     pthread: libc::pthread_t,
 }
 
+// SAFETY: musl represents pthread_t as a pointer, but it is an opaque thread
+// handle, not shared memory accessed by Rust. The registry lock keeps the
+// referenced thread registered while a timer is armed or disarmed.
+#[cfg(target_env = "musl")]
+unsafe impl Send for Target {}
+// SAFETY: the handle is immutable and pthread_getcpuclockid may be called from
+// another thread while the registry lock keeps the target alive.
+#[cfg(target_env = "musl")]
+unsafe impl Sync for Target {}
+
 pub struct Timer(libc::timer_t);
 
 // SAFETY: a timer id is a kernel handle, usable and deletable from any thread.
