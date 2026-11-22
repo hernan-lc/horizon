@@ -549,7 +549,7 @@ impl ApplicationHandler for Game<'_> {
             );
             #[cfg(target_os = "android")]
             let layout_key =
-                horizon_client::keybinds::layout_key_name(event.physical_key, &event.key);
+                horizon_client::keybinds::layout_key_name(event.physical_key, &event.logical_key);
             let raw_code = horizon_client::keybinds::raw_key_code(event.physical_key);
             let action = match (event.state, event.repeat) {
                 (winit::event::ElementState::Released, _) => mod_api::KeyAction::Release,
