@@ -266,7 +266,7 @@ pub fn run(dir: &Path) -> Result<(), String> {
     let console = console_lines();
     // Announce only after the control channel is ready. Hosting panels use this
     // to distinguish this protocol from older supervisors.
-    println!("[mcpanel] force-stop-v1");
+    println!("[horizon] force-stop-v1");
     let mut crashes: Vec<Instant> = Vec::new();
     let mut watch: Option<Watch> = None;
     let (mut program, mut resources) = (program, resources);
@@ -856,7 +856,7 @@ fn supervise(
         }
         while let Ok(line) = console.try_recv() {
             let command = line.trim().trim_start_matches('/');
-            if command == "mcpanel:force-stop" {
+            if command == "horizon:force-stop" {
                 shared.shutdown.store(true, Ordering::SeqCst);
                 restart = false;
                 not_up = false;
@@ -967,7 +967,7 @@ fn wait_stopped(shared: &Arc<Shared>, console: &mpsc::Receiver<String>) -> bool 
     loop {
         while let Ok(line) = console.try_recv() {
             match line.trim().trim_start_matches('/') {
-                "stop" | "mcpanel:force-stop" => shared.shutdown.store(true, Ordering::SeqCst),
+                "stop" | "horizon:force-stop" => shared.shutdown.store(true, Ordering::SeqCst),
                 "start" => shared.restart.store(true, Ordering::SeqCst),
                 _ => note(
                     shared,
@@ -1285,7 +1285,7 @@ mod tests {
         let shared = Shared::with_install(Path::new("."), None);
         let mut child = game("exec sleep 30");
         let (sender, console) = mpsc::channel();
-        sender.send("mcpanel:force-stop".to_string()).unwrap();
+        sender.send("horizon:force-stop".to_string()).unwrap();
         let start = Instant::now();
         assert!(matches!(
             supervise(&shared, &mut child, &console, &mut None),
