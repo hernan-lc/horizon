@@ -2,8 +2,9 @@
 //! game/interface/dedicated/mod.rs). It reads the vanilla files the supervisor writes, takes console commands on stdin and
 //! logs on stdout.
 
+#[cfg(any(target_os = "linux", target_os = "macos", windows))]
+use horizon_platform::mod_package::holder;
 use horizon_platform::mod_package::{
-    holder,
     runtime_leases::{self, Claim},
     selection::LaunchArguments,
 };
@@ -201,8 +202,12 @@ fn lease(program: &Path, command: &Command, dir: &Path) -> Result<Vec<Claim>, St
     let data = data.canonicalize().unwrap_or(data);
     let directory = std::path::absolute(dir).map_err(|e| format!("{}: {e}", dir.display()))?;
     let selection = LaunchArguments::for_command(command).map_err(|e| e.to_string())?;
+    #[cfg(any(target_os = "linux", target_os = "macos", windows))]
     let units =
         holder::lease_paths(&program, &selection, &data, &directory).map_err(|e| e.to_string())?;
+    // Android has no runtime holder; the platform crate does not export one there.
+    #[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]
+    let units: Vec<(std::path::PathBuf, bool)> = Vec::new();
     // A copied release has no marker of the version it came from; the game opens `.installed` in the
     // folder it runs from. Only the runtime's own release copies are ours to complete: the marker is
     // what lists a version as installed, so a version under `versions/` that the cleanup invalidated
