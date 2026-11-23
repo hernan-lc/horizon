@@ -1281,6 +1281,7 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
+    #[ignore = "daily"]
     fn panel_force_stop_reaps_an_unresponsive_engine() {
         let shared = Shared::with_install(Path::new("."), None);
         let mut child = game("exec sleep 30");
