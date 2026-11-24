@@ -1,0 +1,8 @@
+id = "gaysermc-auth"
+name = "GayserMC auth"
+version = "0.1.0"
+description = "Name allowlist and offline-client identity for GayserMC test servers"
+authors = ["hernan-lc"]
+api = "0.2"
+side = "server"
+capabilities = []

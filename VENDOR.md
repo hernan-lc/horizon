@@ -33,6 +33,24 @@ URL: a fresh checkout would fail to initialize the submodule.
    `docs/modding/src/how-to/entities/server-services-and-players.md` and the
    open identity/connection gaps in upstream issue #19220.
 
+## GayserMC auth plugin (`mods/gaysermc-auth`)
+
+A native mod implementing `player_login` (name allowlist from
+`GAYSERMC_ALLOWED_NAMES`) and `player_login_profile` (a deterministic skin for
+offline clients). It builds against `crates/horizon-mod-api` and its two unit
+tests pass with the mod API's dispatch harness.
+
+**Verified limitation:** both login hooks are dispatched only from the LAN /
+integrated-host path:
+- `crates/horizon-client/src/game/network/lan/mod.rs:2233` calls `native_player_login`;
+- `crates/horizon-client/src/lan/conn.rs:1345` calls `native_player_login_profile`.
+
+The dedicated server's login gate (`game/interface/dedicated/mod.rs`, the
+`LoginGate` closure) only checks whitelist/bans/player count and never calls
+either hook. So **the mod does not run on a panel-hosted `horizon-server`**.
+Making custom auth work there requires wiring a hook into that gate in this
+fork; it cannot be done from a mod alone.
+
 ## Sync policy
 
 - Rebase this branch onto new upstream snapshots rather than merging a moving

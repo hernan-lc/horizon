@@ -1,0 +1,13 @@
+[workspace]
+
+[package]
+name = "gaysermc-auth"
+version = "0.1.0"
+edition = "2021"
+description = "GayserMC test-client auth/identity hooks for Horizon"
+
+[dependencies]
+mod_api = { package = "horizon-mod-api", path = "../../crates/horizon-mod-api" }
+
+[dev-dependencies]
+mod_api = { package = "horizon-mod-api", path = "../../crates/horizon-mod-api", features = ["testing"] }
